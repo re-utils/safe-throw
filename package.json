@@ -1,7 +1,7 @@
 {
   "name": "safe-throw",
-  "version": "0.0.1",
-  "description": "Example package",
+  "version": "0.0.2",
+  "description": "Safe error handling",
   "keywords": [],
   "license": "MIT",
   "type": "module",
@@ -17,14 +17,15 @@
   "devDependencies": {
     "@stylistic/eslint-plugin": "latest",
     "@types/bun": "latest",
+    "@types/uglify-js": "latest",
+    "effect": "^3.13.2",
     "eslint": "latest",
     "eslint-plugin-jsdoc": "latest",
     "mitata": "latest",
-    "typescript": "latest",
     "tsx": "latest",
+    "typescript": "latest",
     "typescript-eslint": "latest",
-    "uglify-js": "latest",
-    "@types/uglify-js": "latest"
+    "uglify-js": "latest"
   },
   "dependencies": {}
 }
