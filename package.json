@@ -16,7 +16,7 @@
   },
   "devDependencies": {
     "@stylistic/eslint-plugin": "latest",
-    "@types/bun": "latest",
+    "@types/bun": "^1.2.3",
     "@types/uglify-js": "latest",
     "effect": "^3.13.2",
     "eslint": "latest",
