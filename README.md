@@ -1,1 +1,1 @@
-A safe error handling API that doesn't affect performance.
+A safe, low overhead errors-as-values API.

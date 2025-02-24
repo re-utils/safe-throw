@@ -98,7 +98,7 @@ const pipeProto: Pipe<any, any> = {
 };
 
 /**
- * Create a pipeline that returns the result or the error caught
+ * Create a pipeline that returns the result or the first error caught
  * Don't use this for startup code.
  * @param fn - The first function of the pipeline
  */
