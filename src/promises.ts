@@ -1,4 +1,4 @@
-import { isErr, type InferErr, type InferResult } from '.';
+import { err, isErr, type InferErr, type InferResult } from '.';
 
 type AnyPromise = Promise<any>;
 type PromiseList = AnyPromise[];
@@ -22,7 +22,7 @@ export const all = <const T extends PromiseList>(p: T): Promise<InferAll<T, [], 
       cb = (r: any): any => isErr(r) ? res(r) : r;
     i < p.length;
     i++
-  ) p[i].then(cb);
+  ) p[i] = p[i].then(cb);
 
   // @ts-expect-error Assigned with new Promise
   Promise.all(p).then(res);
