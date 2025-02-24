@@ -132,6 +132,3 @@ export const asyncTry = <
   const T extends any[],
   const R
 >(fn: (...args: T) => Promise<R>, ...args: T): Promise<R | Err> => fn(...args).catch(err);
-
-// Export other modules
-export { default as pipeline } from './pipeline';

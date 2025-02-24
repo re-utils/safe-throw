@@ -1,5 +1,8 @@
 import { summary, run, bench, type k_state } from 'mitata';
+
 import * as st from 'safe-throw';
+import * as pipe from 'safe-throw/pipe';
+
 
 const increment = (x: number) => x + 1
 const double = (x: number) => x < 100 ? st.err('Number too small') : x * 2
@@ -24,9 +27,20 @@ summary(() => {
   bench('safe-throw pipe', function* (state: k_state) {
     const input = state.get('input');
 
-    const f = st.pipeline(increment)
-      .next(double)
-      .next(subtractTen)
+    const f = pipe.init(increment)
+      .pipe(double)
+      .pipe(subtractTen)
+      .fn;
+
+    yield () => f(input);
+  }).range('input', 1, 1024, 4);
+
+  bench('safe-throw pipe.sync', function* (state: k_state) {
+    const input = state.get('input');
+
+    const f = pipe.sync(increment)
+      .pipe(double)
+      .pipe(subtractTen)
       .fn;
 
     yield () => f(input);
