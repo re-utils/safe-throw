@@ -7,8 +7,8 @@ import { isErr, type InferErr, type InferResult } from '..';
 /**
  * Describe a pipeline
  */
-export interface Pipe<Input, Output> {
-  fn: (arg: Input) => Output;
+export interface Pipe<Input extends any[], Output> {
+  fn: (...args: Input) => Output;
   pipe: Output extends Promise<infer Result>
     ? <O>(fn: (a: InferResult<Result>) => O) => Pipe<Input, Promise<O | InferErr<Result>>>
     : <O>(fn: (a: InferResult<Output>) => O) => Pipe<Input, O | InferErr<Output>>;
@@ -31,7 +31,10 @@ const pipeProto: Pipe<any, any> = {
  * Create a pipeline that returns the result or the error caught
  * @param fn - The first function of the pipeline
  */
-export const init = <const I, const O>(fn: (a: I) => O): Pipe<I, O> => {
+export const init = <
+  const I extends [] | [any],
+  const O
+>(fn: (...a: I) => O): Pipe<I, O> => {
   const o = Object.create(pipeProto) as typeof pipeProto;
   o.fn = fn;
   return o;

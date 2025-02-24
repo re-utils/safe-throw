@@ -4,20 +4,22 @@ import * as pipe from 'safe-throw/pipe';
 
 const addServiceCharge = (amount: number) => amount + 1
 
-const fetchTransactionAmount = () => Promise.resolve(100);
-const fetchDiscountRate = async () => Math.random() < 0.3 ? st.err('Too low') : 12;
+const fetchTransactionAmount = async () => 100;
+const fetchDiscountRate = async () => 10 * Math.random();
 
+// Build a pipe
 const run = pipe
-  .init(() => promises.all([
+  .init(() => Promise.all([
     fetchTransactionAmount(),
     fetchDiscountRate()
   ]))
   .pipe(
-    ([total, discountRate]: [number, number]) =>
-      discountRate === 0
-        ? st.err('Discount rate cannot be zero')
-        : total - (total * discountRate) / 100
+    ([total, discountRate]) => discountRate < 2
+      ? st.err('Discount rate cannot be that small')
+      : total - (total * discountRate) / 100
   )
   .pipe(addServiceCharge)
   .pipe((finalAmount) => `Final amount to charge: ${finalAmount}`)
   .fn;
+
+run();

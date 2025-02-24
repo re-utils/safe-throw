@@ -27,7 +27,8 @@ summary(() => {
   bench('safe-throw pipe', function* (state: k_state) {
     const input = state.get('input');
 
-    const f = pipe.init(increment)
+    const f = pipe
+      .init(increment)
       .pipe(double)
       .pipe(subtractTen)
       .fn;
@@ -38,7 +39,8 @@ summary(() => {
   bench('safe-throw pipe.sync', function* (state: k_state) {
     const input = state.get('input');
 
-    const f = pipe.sync(increment)
+    const f = pipe
+      .init(increment)
       .pipe(double)
       .pipe(subtractTen)
       .fn;
