@@ -1,4 +1,4 @@
-import { err, isErr, type InferErr, type InferResult } from '.';
+import { isErr, type InferErr, type InferResult } from '.';
 
 type AnyPromise = Promise<any>;
 type PromiseList = AnyPromise[];
