@@ -1,8 +1,7 @@
 import * as st from 'safe-throw';
-import * as promises from 'safe-throw/promises';
 import * as pipe from 'safe-throw/pipe';
 
-const addServiceCharge = (amount: number) => amount + 1
+const addServiceCharge = (amount: number) => amount + 1;
 
 const fetchTransactionAmount = async () => 100;
 const fetchDiscountRate = async () => 10 * Math.random();

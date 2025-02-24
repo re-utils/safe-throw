@@ -23,6 +23,11 @@ export interface TaggedErr<Tag = unknown, T = unknown> extends Err<T> {
 }
 
 /**
+ * Describe a tagged error constructor
+ */
+export type InitTaggedErr<T> = <const P>(payload: P) => TaggedErr<T, P>;
+
+/**
  * Infer the result type from a type
  */
 export type InferResult<T> = Exclude<T, Err>;
@@ -51,23 +56,23 @@ export const err = <const T>(payload: T): Err<T> => [errorSymbol, payload];
 export const payload = <const T>(e: Err<T>): T => e[1];
 
 /**
- * Create a tagged error constructor
- * @param tag - The error tag
- */
-export const taggedErr = <const T>(tag: T): <const P>(payload: P) => TaggedErr<T, P> => (p) => [errorSymbol, p, tag];
-
-/**
  * Check if an error is tagged
  * @param e - The error to be checked
  */
 // @ts-expect-error Don't provide the info on the type
-export const isTagged = (e: Err): e is TaggedErr => e.length > 2;
+export const isErrTagged = (e: Err): e is TaggedErr => e.length > 2;
 
 /**
  * Get the tag of a tagged error union
  * @param e - The tagged error union
  */
 export const tag = <const T>(e: TaggedErr<T>): T => e[2];
+
+/**
+ * Create a tagged error constructor
+ * @param t - The error tag
+ */
+export const taggedErr = <const T>(t: T): InitTaggedErr<T> => (p) => [errorSymbol, p, t];
 
 /**
  * Describe an unexpected error
@@ -90,45 +95,3 @@ export const unwrapErr = <const T>(p: T): InferResult<T> => {
   if (!isErr(p)) return p as any;
   throw new UnexpectedError(p[1]);
 };
-
-/**
- * Make the payload resolves to `undefined` when it throws
- * @param p
- */
-export const ignoreErr = <const T>(p: T): InferResult<T> | undefined => {
-  if (!isErr(p)) return p as any;
-};
-
-/**
- * Catch promise error safely
- * @param p
- */
-export const tryPromise = <const T>(p: Promise<T>): Promise<T | Err> => p.catch(err);
-
-/**
- * Try to run a sync function
- * @param fn
- * @param args - The arguments to put in the function
- * @returns return the result or an error
- */
-export const syncTry = <
-  const T extends any[],
-  const R
->(fn: (...args: T) => R, ...args: T): R | Err => {
-  try {
-    return fn(...args);
-  } catch (e) {
-    return err(e);
-  }
-};
-
-/**
- * Try to run an async function
- * @param fn
- * @param args - The arguments to put in the function
- * @returns return the result or an error
- */
-export const asyncTry = <
-  const T extends any[],
-  const R
->(fn: (...args: T) => Promise<R>, ...args: T): Promise<R | Err> => fn(...args).catch(err);
