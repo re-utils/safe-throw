@@ -97,18 +97,8 @@ export class UnexpectedError extends Error {
  * @param p - The payload to unwrap
  * @throws When the payload is an error
  */
-export const unwrapErr = <const T>(p: T): InferResult<T> => {
+export const unwrap = <const T>(p: T): InferResult<T> => {
   // Likely to happen
   if (!isErr(p)) return p as any;
   throw new UnexpectedError(p[1]);
 };
-
-/**
- * Unwrap a payload, resolves to the fallback value when payload is an error
- * @param p - The value to unwrap
- * @param f - The fallback value
- */
-export const unwrapOr = <
-  const T,
-  const F = undefined
->(p: T, f?: F): InferResult<T> | F => isErr(p) ? f : p as any;
