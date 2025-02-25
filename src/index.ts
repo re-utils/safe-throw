@@ -60,7 +60,14 @@ export const payload = <const T>(e: Err<T>): T => e[1];
  * @param e - The error to be checked
  */
 // @ts-expect-error Don't provide the info on the type
-export const isErrTagged = (e: Err): e is TaggedErr => e.length > 2;
+export const tagged = (e: Err): e is TaggedErr => e.length > 2;
+
+/**
+ * Check if an error is tagged with a specific tag
+ * @param tag - The tag to check with
+ * @param e - The error to be checked
+ */
+export const taggedWith = <const T>(tag: T, e: TaggedErr): e is TaggedErr<T> => e[2] === tag;
 
 /**
  * Get the tag of a tagged error union
@@ -86,12 +93,22 @@ export class UnexpectedError extends Error {
 }
 
 /**
- * Unwrap an error type
+ * Unwrap a payload
  * @param p - The payload to unwrap
- * @throws When the payload is actually an error
+ * @throws When the payload is an error
  */
 export const unwrapErr = <const T>(p: T): InferResult<T> => {
   // Likely to happen
   if (!isErr(p)) return p as any;
   throw new UnexpectedError(p[1]);
 };
+
+/**
+ * Unwrap a payload, resolves to the fallback value when payload is an error
+ * @param p - The value to unwrap
+ * @param f - The fallback value
+ */
+export const unwrapOr = <
+  const T,
+  const F = undefined
+>(p: T, f?: F): InferResult<T> | F => isErr(p) ? f : p as any;

@@ -1,27 +1,26 @@
-import { isErr, taggedErr, type Err, type InferResult, type InitTaggedErr, type TaggedErr } from '.';
+import { taggedErr, taggedWith, type InitTaggedErr, type TaggedErr } from '.';
 
 /**
  * The tag of native errors
  */
-export const nativeErrTag: unique symbol = Symbol();
+export const errTag: unique symbol = Symbol();
 
 /**
  * Describe a native error
  */
-type NativeErr = TaggedErr<typeof nativeErrTag>;
+export type Err = TaggedErr<typeof errTag>;
 
 /**
  * The native error constructor
  */
-export const nativeErr: InitTaggedErr<typeof nativeErrTag> = taggedErr(nativeErrTag);
+export const err: InitTaggedErr<typeof errTag> = taggedErr(errTag);
 
 /**
- * Make the payload resolves to `undefined` when it throws
- * @param p
+ * Check if a tagged error is a native error
+ * @param e
+ * @returns
  */
-export const ignoreErr = <const T>(p: T): InferResult<T> | undefined => {
-  if (!isErr(p)) return p as any;
-};
+export const isErr = (e: TaggedErr): e is Err => taggedWith(errTag, e);
 
 /**
  * Catch promise error safely
@@ -29,32 +28,28 @@ export const ignoreErr = <const T>(p: T): InferResult<T> | undefined => {
  */
 export const tryPromise = <const T>(
   p: Promise<T>
-): Promise<T | NativeErr> => p.catch(nativeErr);
+): Promise<T | Err> => p.catch(err);
 
 /**
- * Try to run a sync function
+ * Wrap an async function and return thrown error as a `nativeErr`
  * @param fn
- * @param args - The arguments to put in the function
- * @returns return the result or an error
  */
 export const syncTry = <
   const T extends any[],
   const R
->(fn: (...args: T) => R, ...args: T): R | Err => {
+>(fn: (...args: T) => R): (...args: T) => R | Err => (...args) => {
   try {
     return fn(...args);
   } catch (e) {
-    return nativeErr(e);
+    return err(e);
   }
 };
 
 /**
- * Try to run an async function
+ * Wrap an async function and return thrown error as a `nativeErr`
  * @param fn
- * @param args - The arguments to put in the function
- * @returns return the result or an error
  */
 export const asyncTry = <
   const T extends any[],
   const R
->(fn: (...args: T) => Promise<R>, ...args: T): Promise<R | Err> => fn(...args).catch(nativeErr);
+>(fn: (...args: T) => Promise<R>): (...args: T) => Promise<R | Err> => (...args) => tryPromise(fn(...args));
