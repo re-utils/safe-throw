@@ -84,13 +84,7 @@ export const taggedErr = <const T>(t: T): InitTaggedErr<T> => (p) => [errorSymbo
 /**
  * Describe an unexpected error
  */
-export class UnexpectedError extends Error {
-  val: unknown;
-  constructor(p: unknown) {
-    super('Unexpected Error');
-    this.val = p;
-  }
-}
+export const unexpectedErr = (val: unknown): Error => new Error('Unexpected error', { cause: val });
 
 /**
  * Unwrap a payload
@@ -100,5 +94,5 @@ export class UnexpectedError extends Error {
 export const unwrap = <const T>(p: T): InferResult<T> => {
   // Likely to happen
   if (!isErr(p)) return p as any;
-  throw new UnexpectedError(p[1]);
+  throw unexpectedErr(p[1]);
 };
