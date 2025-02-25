@@ -1,6 +1,6 @@
 A lightweight, low overhead errors-as-values API.
 
-# Example usage
+# Examples
 Return errors:
 ```ts
 import * as st from 'safe-throw';
@@ -35,6 +35,24 @@ if (st.isErr(res)) {
 }
 ```
 
+Handling promise errors:
+```ts
+import * as st from 'safe-throw';
+import * as native from 'safe-throw/native';
+
+const res = await native.tryPromise(
+  fetch('http://localhost:3000')
+);
+if (st.isErr(res)) {
+  // Get the error payload
+  const err = st.payload(res);
+  console.error(err);
+} else {
+  // Use response normally
+  console.log(await res.text());
+}
+```
+
 Unwrapping a value:
 ```ts
 import * as st from 'safe-throw';
@@ -51,6 +69,37 @@ Create tagged errors:
 import * as st from 'safe-throw';
 
 const httpErr = st.taggedErr('http');
+
+const fn = () => {
+  const n1 = Math.random(),
+    n2 = Math.random();
+
+  if (n1 < 0.5)
+    return httpErr('random');
+
+  if (n2 < 0.5)
+    return st.err('the generated number is too small');
+
+  return n1 + n2;
+}
+
+const res = fn();
+if (st.isErr(res)) {
+  if (st.taggedWith('http', res)) {
+    // Handle http error
+  } else {
+    // Handle untagged errors
+  }
+} else {
+  console.log(res);
+}
+```
+
+Match different error tags:
+```ts
+import * as st from 'safe-throw';
+
+const httpErr = st.taggedErr('http');
 const validationErr = st.taggedErr('validation');
 
 const fn = () => {
@@ -61,21 +110,35 @@ const fn = () => {
     return httpErr('random');
 
   if (n2 < 0.5)
-    return validationErr('random');
+    return st.err('the generated number is too small');
 
-  return n1 + n2;
+  const sum = n1 + n2;
+  return sum < 0.15
+    ? validationErr('sum of two generated numbers is too small')
+    : sum;
 }
 
 const res = fn();
 if (st.isErr(res)) {
-  switch (st.tag(res)) {
-    case 'http':
-      // Handle http error
-      break;
+  if (st.tagged(res)) {
+    // Match tags
+    switch (st.tag(res)) {
+      case 'http':
+        // Handle http error
+        break;
 
-    case 'validation':
-      // Handle validation error
-      break;
+      case 'validation':
+        // Handle validation error
+        break;
+    }
+  } else {
+    // Handle untagged errors
+  }
+
+  if (st.taggedWith('http', res)) {
+    // Handle http error
+  } else {
+    // Handle validation error
   }
 } else {
   console.log(res);

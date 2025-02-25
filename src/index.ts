@@ -67,7 +67,7 @@ export const tagged = (e: Err): e is TaggedErr => e.length > 2;
  * @param tag - The tag to check with
  * @param e - The error to be checked
  */
-export const taggedWith = <const T>(tag: T, e: TaggedErr): e is TaggedErr<T> => e[2] === tag;
+export const taggedWith = <const T>(tag: T, e: Err): e is TaggedErr<T> => tagged(e) && e[2] === tag;
 
 /**
  * Get the tag of a tagged error union
