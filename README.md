@@ -134,12 +134,6 @@ if (st.isErr(res)) {
   } else {
     // Handle untagged errors
   }
-
-  if (st.taggedWith('http', res)) {
-    // Handle http error
-  } else {
-    // Handle validation error
-  }
 } else {
   console.log(res);
 }
