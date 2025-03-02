@@ -138,3 +138,52 @@ if (st.isErr(res)) {
   console.log(res);
 }
 ```
+
+Retrying functions:
+```ts
+import * as st from 'safe-throw';
+import * as retry from 'safe-throw/retry';
+import * as native from 'safe-throw/native';
+
+// Wrap fetch error in a native error instance
+const safeFetch = native.asyncTry(fetch);
+
+{
+  // Run fetch until no error occured or tried 5 times
+  const fetchFiveTimes = retry.repeatAsync(5, safeFetch);
+
+  const res = await fetchFiveTimes('http://example.com');
+  if (st.isErr(res)) {
+    // ...
+  }
+}
+
+{
+  // Retry until a condition is met
+  const fetchUntilSucceed = retry.untilAsync(
+    (res) => st.isErr(res) || res.status === 200,
+    safeFetch
+  );
+
+  const res = await fetchUntilSucceed('http://example.com');
+  if (st.isErr(res)) {
+    // ...
+  }
+}
+
+{
+  // More complex use cases
+  const runFetch = retry.runAsync(
+    safeFetch,
+    // Initialize states when retrying
+    () => ({ retryCount: 0, startTime: performance.now() }),
+    // Run until retried 5 times or the opteration takes more than 15 seconds
+    (state, res) => state.retryCount++ > 5 || performance.now() - state.startTime > 15000),
+  );
+
+  const res = await runFetch('http://example.com');
+  if (st.isErr(res)) {
+    // ...
+  }
+}
+```

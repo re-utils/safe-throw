@@ -274,16 +274,6 @@ export default tsEslint.config({
         format: ["camelCase", "PascalCase"],
       },
     ],
-    "@typescript-eslint/no-empty-function": [
-      "error",
-      {
-        allow: [
-          "private-constructors",
-          "protected-constructors",
-          "decoratedFunctions",
-        ],
-      },
-    ],
     "@typescript-eslint/no-empty-interface": [
       "warn",
       {

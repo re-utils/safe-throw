@@ -1,3 +1,8 @@
+/**
+ * @module
+ * Promise utilities
+ */
+
 import { isErr, type InferErr, type InferResult } from '.';
 
 type AnyPromise = Promise<any>;

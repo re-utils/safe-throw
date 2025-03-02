@@ -1,3 +1,8 @@
+/**
+ * @module
+ * Native error handling
+ */
+
 import { taggedErr, taggedWith, type InitTaggedErr, type TaggedErr } from '.';
 
 /**
