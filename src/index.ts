@@ -82,6 +82,12 @@ export const tag = <const T>(e: TaggedErr<T>): T => e[2];
 export const taggedErr = <const T>(t: T): InitTaggedErr<T> => (p) => [errorSymbol, p, t];
 
 /**
+ * Get a tag of a tagged error constructor
+ * @param t
+ */
+export const fnTag = <const T>(t: InitTaggedErr<T>): T => t(null)[2];
+
+/**
  * Describe an unexpected error
  */
 export const unexpectedErr = (val: unknown): Error => new Error('Unexpected error', { cause: val });

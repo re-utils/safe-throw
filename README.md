@@ -60,7 +60,7 @@ import * as st from 'safe-throw';
 const divide = (a: number, b: number) =>
   b === 0 ? st.err('Cannot divide by 0') : a / b;
 
-// Throws an UnexpectedError when the value is an error
+// Throws an Error when the value is an error
 const res = st.unwrap(divide(9, Math.random() + 2));
 ```
 
@@ -145,12 +145,9 @@ import * as st from 'safe-throw';
 import * as retry from 'safe-throw/retry';
 import * as native from 'safe-throw/native';
 
-// Wrap fetch error in a native error instance
-const safeFetch = native.asyncTry(fetch);
-
 {
   // Run fetch until no error occured or tried 5 times
-  const fetchFiveTimes = retry.repeatAsync(5, safeFetch);
+  const fetchFiveTimes = retry.repeatAsync(5, native.req);
 
   const res = await fetchFiveTimes('http://example.com');
   if (st.isErr(res)) {
@@ -162,7 +159,7 @@ const safeFetch = native.asyncTry(fetch);
   // Retry until a condition is met
   const fetchUntilSucceed = retry.untilAsync(
     (res) => st.isErr(res) || res.status === 200,
-    safeFetch
+    native.req
   );
 
   const res = await fetchUntilSucceed('http://example.com');
@@ -174,7 +171,7 @@ const safeFetch = native.asyncTry(fetch);
 {
   // More complex use cases
   const runFetch = retry.runAsync(
-    safeFetch,
+    native.req,
     // Initialize states when retrying
     () => ({ retryCount: 0, startTime: performance.now() }),
     // Run until retried 5 times or the opteration takes more than 15 seconds

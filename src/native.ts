@@ -13,7 +13,7 @@ export const errTag: unique symbol = Symbol();
 /**
  * Describe a native error
  */
-export type Err = TaggedErr<typeof errTag>;
+export type Err<P = unknown> = TaggedErr<typeof errTag, P>;
 
 /**
  * The native error constructor
@@ -31,9 +31,9 @@ export const isErr = (e: TaggedErr): e is Err => taggedWith(errTag, e);
  * Catch promise error safely
  * @param p
  */
-export const tryPromise = <const T>(
+export const tryPromise = <const T, const P>(
   p: Promise<T>
-): Promise<T | Err> => p.catch(err);
+): Promise<T | Err<P>> => p.catch(err);
 
 /**
  * Wrap an async function and return thrown error as a `nativeErr`
@@ -41,12 +41,13 @@ export const tryPromise = <const T>(
  */
 export const syncTry = <
   const T extends any[],
-  const R
->(fn: (...args: T) => R): (...args: T) => R | Err => (...args) => {
+  const R,
+  const P
+>(fn: (...args: T) => R): (...args: T) => R | Err<P> => (...args) => {
   try {
     return fn(...args);
   } catch (e) {
-    return err(e);
+    return err(e) as any;
   }
 };
 
@@ -56,5 +57,14 @@ export const syncTry = <
  */
 export const asyncTry = <
   const T extends any[],
-  const R
->(fn: (...args: T) => Promise<R>): (...args: T) => Promise<R | Err> => (...args) => tryPromise(fn(...args));
+  const R,
+  const P
+>(fn: (...args: T) => Promise<R>): (...args: T) => Promise<R | Err<P>> => (...args) => tryPromise<R, P>(fn(...args));
+
+/**
+ * Run fetch without throwing errors
+ */
+export const req = asyncTry(fetch) as (
+  (...args: Parameters<typeof fetch>) =>
+  ReturnType<typeof fetch> | Promise<Err<DOMException | TypeError>>
+);
