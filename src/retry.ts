@@ -1,6 +1,5 @@
 /**
- * @module
- * Utilities for retrying functions
+ * @module Retrying utilities
  */
 
 import { isErr } from '.';

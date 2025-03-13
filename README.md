@@ -184,3 +184,23 @@ import * as native from 'safe-throw/native';
   }
 }
 ```
+
+Handling errors with generators.
+```ts
+import * as st from 'safe-throw';
+import * as flow from 'safe-throw/flow';
+
+const rand = () => Math.random() < 0.5 ? st.err('Number too small') : Math.random();
+
+// This can be used as a virtual thread
+// It's faster than the same behavior with async functions
+const fn = function* () {
+  const rand = yield* flow.unwrap(rand());
+  return rand * 5;
+}
+
+const res = await flow.run(fn());
+if (st.isErr(res)) {
+  // ...
+}
+```

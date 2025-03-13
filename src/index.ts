@@ -1,6 +1,5 @@
 /**
- * @module
- * Error initialization and checking module
+ * @module Basic error handling
  */
 const errorSymbol: unique symbol = Symbol();
 
