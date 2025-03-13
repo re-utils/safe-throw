@@ -10,18 +10,18 @@ import { isErr, type Err } from '.';
 export type Unwrap<T> = Exclude<Awaited<T>, Err>;
 
 /**
- * Unwrap a type list
+ * Unwrap to an error
  */
-export type UnwrapAll<T extends any[]> = T extends [infer A, ...infer B]
-  ? [Unwrap<A>, ...UnwrapAll<B>]
-  : [];
+export type UnwrapErr<T> = Awaited<T> & Err;
+
+type ListResult<T extends any[], Result extends any[] = [], Error = never> = T extends [infer A, ...infer B]
+  ? ListResult<B, [...Result, Unwrap<A>], UnwrapErr<A>>
+  : Result | Error;
 
 /**
- * Unwrap a type list and merge values into an union
+ * Describe a generator that unwrap the error type
  */
-export type UnwrapAny<T extends any[]> = T extends [infer A, ...infer B]
-  ? [Unwrap<A>, ...UnwrapAll<B>]
-  : [];
+export type UnwrapGenerator<T> = Generator<T, Unwrap<T>>;
 
 /**
  * Describe a flow runner
@@ -48,8 +48,7 @@ export const run: Runner = async (g) => {
  * Unwrap a value
  * @param p
  */
-export const unwrap = function* <T>(p: T): Generator<Unwrap<T>, Unwrap<T>> {
-  // @ts-expect-error Unwrap promise in run
+export const unwrap = function* <T>(p: T): UnwrapGenerator<T> {
   return yield p;
 };
 
@@ -67,7 +66,7 @@ const unwrapResolvedAll = (arr: any[]): any => {
  * Unwrap all promises concurrently
  * @param p
  */
-export const all = function* <T extends any[]>(p: T): Generator<UnwrapAll<T>, UnwrapAll<T>> {
+export const all = function* <T extends any[]>(p: T): UnwrapGenerator<ListResult<T>> {
   // @ts-expect-error Unwrap promise in run
   return yield Promise.all(p).then(unwrapResolvedAll);
 };
@@ -76,7 +75,7 @@ export const all = function* <T extends any[]>(p: T): Generator<UnwrapAll<T>, Un
  * Unwrap the first promise that resolves
  * @param p
  */
-export const race = function* <T extends any[]>(p: T): Generator<UnwrapAny<T>, UnwrapAny<T>> {
+export const race = function* <T extends any[]>(p: T): UnwrapGenerator<Awaited<T[number]>> {
   // @ts-expect-error Unwrap promise in run
   return yield Promise.race(p);
 };
