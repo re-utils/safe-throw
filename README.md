@@ -196,7 +196,9 @@ const rand = () => Math.random() < 0.5 ? st.err('Number too small') : Math.rando
 // It's faster than the same behavior with async functions
 const fn = function* () {
   const rand = yield* flow.unwrap(rand());
-  return rand * 5;
+  const rand2 = yield* flow.unwrap(rand());
+
+  return rand + rand2 * 5;
 }
 
 const res = await flow.run(fn());
