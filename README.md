@@ -147,7 +147,7 @@ import * as native from 'safe-throw/native';
 
 {
   // Run fetch until no error occured or tried 5 times
-  const fetchFiveTimes = retry.repeatAsync(5, native.req);
+  const fetchFiveTimes = retry.repeatAsync(5, native.request);
 
   const res = await fetchFiveTimes('http://example.com');
   if (st.isErr(res)) {
@@ -159,7 +159,7 @@ import * as native from 'safe-throw/native';
   // Retry until a condition is met
   const fetchUntilSucceed = retry.untilAsync(
     (res) => st.isErr(res) || res.status === 200,
-    native.req
+    native.request
   );
 
   const res = await fetchUntilSucceed('http://example.com');
@@ -171,7 +171,7 @@ import * as native from 'safe-throw/native';
 {
   // More complex use cases
   const runFetch = retry.runAsync(
-    native.req,
+    native.request,
     // Initialize states when retrying
     () => ({ retryCount: 0, startTime: performance.now() }),
     // Run until retried 5 times or the opteration takes more than 15 seconds
@@ -182,27 +182,5 @@ import * as native from 'safe-throw/native';
   if (st.isErr(res)) {
     // ...
   }
-}
-```
-
-Handling errors with generators.
-```ts
-import * as st from 'safe-throw';
-import * as flow from 'safe-throw/flow';
-
-const rnd = () => Math.random() < 0.5 ? st.err('Number too small') : Math.random();
-
-// This can be used as a virtual thread
-// It's faster than the same behavior with async functions
-const fn = function* () {
-  const rand = yield* flow.unwrap(rnd());
-  const rand2 = yield* flow.unwrap(rnd());
-
-  return rand + rand2 * 5;
-}
-
-const res = await flow.run(fn());
-if (st.isErr(res)) {
-  // ...
 }
 ```

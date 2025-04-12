@@ -1,7 +1,8 @@
 /**
  * @module Basic error handling
  */
-const errorSymbol: unique symbol = Symbol();
+
+const errorSymbol: unique symbol = [] as any;
 
 /**
  * Describe an error

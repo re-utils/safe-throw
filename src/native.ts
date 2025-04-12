@@ -7,7 +7,7 @@ import { taggedErr, taggedWith, type InitTaggedErr, type TaggedErr } from '.';
 /**
  * The tag of native errors
  */
-export const errTag: unique symbol = Symbol();
+export const errTag: unique symbol = [] as any;
 
 /**
  * Describe a native error
@@ -63,7 +63,7 @@ export const asyncTry = <
 /**
  * Run fetch without throwing errors
  */
-export const req = asyncTry(fetch) as (
+export const request = asyncTry(fetch) as (
   (...args: Parameters<typeof fetch>) =>
   ReturnType<typeof fetch> | Promise<Err<DOMException | TypeError>>
 );
