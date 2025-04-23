@@ -2,7 +2,7 @@
  * @module Native error handling
  */
 
-import { taggedErr, taggedWith, type InitTaggedErr, type TaggedErr } from '.';
+import { taggedErr, taggedWith, type InitTaggedErr, type TaggedErr } from './index.js';
 
 /**
  * The tag of native errors

@@ -1,6 +1,6 @@
 {
   "name": "safe-throw",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A lightweight, low overhead errors-as-values API",
   "keywords": [],
   "license": "MIT",

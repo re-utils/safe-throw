@@ -1,4 +1,4 @@
-import { summary, run, bench, type k_state, do_not_optimize } from 'mitata';
+import { summary, run, bench, do_not_optimize } from 'mitata';
 import { err, isErr } from 'safe-throw';
 
 summary(() => {

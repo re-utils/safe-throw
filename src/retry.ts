@@ -2,7 +2,7 @@
  * @module Retrying utilities
  */
 
-import { isErr } from '.';
+import { isErr } from './index.js';
 
 /**
  * Create a synchronous retrier for a function
@@ -18,7 +18,7 @@ export const run = <
   state: (...args: Args) => State,
   until: (state: State, res: Result) => boolean
 ): (...args: Args) => Result => (...args) => {
-  for (let res, s = state(...args); ;) if (until(s, res = fn(...args))) return res;
+  for (let res: any, s = state(...args); ;) if (until(s, res = fn(...args))) return res;
 };
 
 /**
