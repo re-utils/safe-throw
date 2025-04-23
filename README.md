@@ -183,4 +183,3 @@ import * as native from 'safe-throw/native';
     // ...
   }
 }
-```
