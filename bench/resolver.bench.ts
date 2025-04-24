@@ -5,7 +5,7 @@ summary(() => {
   const LEN = 2 ** 16;
   const data = new Array(LEN)
     .fill(0)
-    .map((_, i) => i % 8 === 0 ? err(null) : i);
+    .map((_, i) => (i % 8 === 0 ? err(null) : i));
 
   bench('Promise', function* () {
     yield {
@@ -15,12 +15,12 @@ summary(() => {
       async bench(d: any[]) {
         for (let i = 0; i < d.length; i++) {
           let r;
-          const p = new Promise((res) => r = res);
+          const p = new Promise((res) => (r = res));
           r!(isErr(d[i]) ? d[i] : null);
           do_not_optimize(await p);
         }
-      }
-    }
+      },
+    };
   });
 
   bench('Promise.withResolvers', function* () {
@@ -34,8 +34,8 @@ summary(() => {
           p.resolve(isErr(d[i]) ? d[i] : null);
           do_not_optimize(await p.promise);
         }
-      }
-    }
+      },
+    };
   });
 });
 
