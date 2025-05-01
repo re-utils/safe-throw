@@ -2,39 +2,37 @@
  * @module Basic error handling
  */
 
-declare const brand: unique symbol;
+// Limit type hint as much as possible
+type NoProp = Readonly<Record<string | number | symbol, never>>;
 
-const errorSymbol: readonly [] & { readonly [brand]: unique symbol } =
-  [] as any;
+// Make tags unique
+declare const sym: unique symbol;
+
+const errorTag: NoProp & { readonly [sym]: unique symbol } = [] as any;
 
 /**
  * The tag of native errors
  */
-export const nativeTag: readonly [] & { readonly [brand]: unique symbol } =
-  [] as any;
+export const nativeTag: NoProp & { readonly [sym]: unique symbol } = [] as any;
+
+// Don't expose error props
+declare const payloadSym: unique symbol;
+declare const tagSym: unique symbol;
+
+/**
+ * Describe an error
+ */
+export type Err<T = unknown> = NoProp & { [payloadSym]: T };
+
+/**
+ * Describe a tagged error
+ */
+export type TaggedErr<Tag = unknown, T = unknown> = Err<T> & { [tagSym]: Tag };
 
 /**
  * Describe a native error
  */
 export type NativeErr<P = unknown> = TaggedErr<typeof nativeTag, P>;
-
-/**
- * Describe an error
- */
-export interface Err<T = unknown> {
-  // eslint-disable-next-line
-  0: typeof errorSymbol;
-  // eslint-disable-next-line
-  1: T;
-}
-
-/**
- * Describe a tagged error
- */
-export interface TaggedErr<Tag = unknown, T = unknown> extends Err<T> {
-  // eslint-disable-next-line
-  2: Tag;
-}
 
 /**
  * Describe a tagged error constructor
@@ -52,17 +50,27 @@ export type InferResult<T> = Exclude<T, Err>;
 export type InferErr<T> = Extract<T, Err>;
 
 /**
+ * Infer the error payload type
+ */
+export type InferPayload<T extends Err> = T[typeof payloadSym];
+
+/**
+ * Infer the error tag type
+ */
+export type InferTag<T extends TaggedErr> = T[typeof tagSym];
+
+/**
  * Check whether input is an error
  * @param t
  */
 export const isErr = (t: any): t is Err =>
-  Array.isArray(t) && t[0] === errorSymbol;
+  Array.isArray(t) && t[0] === errorTag;
 
 /**
  * Create an error from the payload
  * @param payload
  */
-export const err = <const T>(payload: T): Err<T> => [errorSymbol, payload];
+export const err = <const T>(payload: T): Err<T> => [errorTag, payload] as any;
 
 /**
  * Return the payload of an error
@@ -75,7 +83,6 @@ export const payload = <const T>(e: Err<T>): T => e[1];
  * @param e - The error to be checked
  */
 export const tagged = <const T>(e: Err<T>): e is TaggedErr<any, T> =>
-  // @ts-expect-error Don't provide the info on the type
   e.length > 2;
 
 /**
@@ -100,23 +107,21 @@ export const tag = <const T>(e: TaggedErr<T>): T => e[2];
  */
 export const taggedErr =
   <const T>(t: T): InitTaggedErr<T> =>
-  (p) => [errorSymbol, p, t];
+  (p) =>
+    [errorTag, p, t] as any;
 
 /**
  * The native error constructor
  */
-export const nativeErr: InitTaggedErr<typeof nativeTag> = (p) => [
-  errorSymbol,
-  p,
-  nativeTag,
-];
+export const nativeErr: InitTaggedErr<typeof nativeTag> = (p) =>
+  [errorTag, p, nativeTag] as any;
 
 /**
  * Check if an error is a native error
  * @param e
  */
 export const isNativeErr = <const T>(e: Err<T>): e is NativeErr<T> =>
-  tagged(e) && e[2] === nativeTag;
+  taggedWith(nativeTag, e);
 
 /**
  * Catch promise error safely
@@ -149,17 +154,13 @@ export const asyncTry = <
   const F extends (...args: any[]) => Promise<any>,
 >(
   fn: F,
-): F & ((...args: Parameters<F>) => Promise<NativeErr<P>>) =>
+): F | ((...args: Parameters<F>) => Promise<NativeErr<P>>) =>
   ((...args) => promiseTry(fn(...args))) as F;
 
 /**
  * Fetch and return error as a `NativeErr`
  */
-export const request: typeof fetch &
-  ((
-    input: string | Request | URL,
-    init?: RequestInit | undefined,
-  ) => Promise<NativeErr<DOMException | TypeError>>) = asyncTry<
-  DOMException | TypeError,
-  typeof fetch
->(fetch);
+export const request: (
+  input: string | Request | URL,
+  init?: RequestInit | undefined,
+) => Promise<Response | NativeErr<DOMException | TypeError>> = asyncTry(fetch);
