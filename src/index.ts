@@ -8,7 +8,10 @@ type NoProp = Readonly<Record<string | number | symbol, never>>;
 // Make tags unique
 declare const sym: unique symbol;
 
-const errorTag: NoProp & { readonly [sym]: unique symbol } = [] as any;
+/**
+ * The error identifier
+ */
+export const errorTag: NoProp & { readonly [sym]: unique symbol } = [] as any;
 
 /**
  * The tag of native errors
@@ -79,6 +82,21 @@ export const err = <const T>(payload: T): Err<T> => [errorTag, payload] as any;
 export const payload = <const T>(e: Err<T>): T => e[1];
 
 /**
+ * Get the tag of a tagged error union
+ * @param e - The tagged error union
+ */
+export const tag = <const T>(e: TaggedErr<T>): T => e[2];
+
+/**
+ * Create a tagged error constructor
+ * @param t - The error tag
+ */
+export const taggedErr =
+  <const T>(t: T): InitTaggedErr<T> =>
+  (p) =>
+    [errorTag, p, t] as any;
+
+/**
  * Check if an error is tagged
  * @param e - The error to be checked
  */
@@ -96,25 +114,9 @@ export const taggedWith = <const T, const P>(
 ): e is TaggedErr<T, P> => tagged(e) && e[2] === tag;
 
 /**
- * Get the tag of a tagged error union
- * @param e - The tagged error union
- */
-export const tag = <const T>(e: TaggedErr<T>): T => e[2];
-
-/**
- * Create a tagged error constructor
- * @param t - The error tag
- */
-export const taggedErr =
-  <const T>(t: T): InitTaggedErr<T> =>
-  (p) =>
-    [errorTag, p, t] as any;
-
-/**
  * The native error constructor
  */
-export const nativeErr: InitTaggedErr<typeof nativeTag> = (p) =>
-  [errorTag, p, nativeTag] as any;
+export const nativeErr: InitTaggedErr<typeof nativeTag> = taggedErr(nativeTag);
 
 /**
  * Check if an error is a native error
