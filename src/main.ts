@@ -5,24 +5,22 @@
 // Limit type hint as much as possible
 type NoProp = Readonly<Record<string | number | symbol, never>>;
 
-/**
- * The error identifier
- */
-export const errorTag: NoProp = [] as any;
+// Error identifier
+const errorTag: NoProp = [] as any;
 
 // Don't expose error props
-declare const payloadSym: unique symbol;
-declare const tagSym: unique symbol;
+declare const _p: unique symbol;
+declare const _t: unique symbol;
 
 /**
  * Describe an error
  */
-export type Err<T = unknown> = NoProp & { [payloadSym]: T };
+export type Err<T = unknown> = NoProp & { [_p]: T };
 
 /**
  * Describe a tagged error
  */
-export type TaggedErr<Tag = unknown, T = unknown> = Err<T> & { [tagSym]: Tag };
+export type TaggedErr<Tag = unknown, T = unknown> = Err<T> & { [_t]: Tag };
 
 /**
  * Describe a tagged error constructor
@@ -42,12 +40,12 @@ export type InferErr<T> = Extract<T, Err>;
 /**
  * Infer the error payload type
  */
-export type InferPayload<T extends Err> = T[typeof payloadSym];
+export type InferPayload<T extends Err> = T[typeof _p];
 
 /**
  * Infer the error tag type
  */
-export type InferTag<T extends TaggedErr> = T[typeof tagSym];
+export type InferTag<T extends TaggedErr> = T[typeof _t];
 
 /**
  * Check whether input is an error
@@ -135,7 +133,7 @@ export const asyncTry = <
   ((...args) => promiseTry(fn(...args))) as F;
 
 /**
- * Fetch and return error as a `NativeErr`
+ * Fetch and return thrown error
  */
 export const request: (
   input: string | Request | URL,
