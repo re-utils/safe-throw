@@ -1,2 +1,2 @@
-export * from './main.js';
-export * as st from './main.js';
+export * as st from './error.js';
+export * from './error.js';

@@ -12,6 +12,7 @@ const res = divide(9, Math.random());
 if (st.isErr(res)) {
   console.error(st.payload(res));
 } else {
+  // No unwrapping needed for result
   console.log(res);
 }
 ```

@@ -6,7 +6,7 @@
 type NoProp = Readonly<Record<string | number | symbol, never>>;
 
 // Error identifier
-const errorTag: NoProp = [] as any;
+const _: NoProp = [] as any;
 
 // Don't expose error props
 declare const _p: unique symbol;
@@ -52,13 +52,13 @@ export type InferTag<T extends TaggedErr> = T[typeof _t];
  * @param t
  */
 export const isErr = (t: any): t is Err =>
-  Array.isArray(t) && t[0] === errorTag;
+  Array.isArray(t) && t[0] === _;
 
 /**
  * Create an error from the payload
  * @param payload
  */
-export const err = <const T>(payload: T): Err<T> => [errorTag, payload] as any;
+export const err = <const T>(payload: T): Err<T> => [_, payload] as any;
 
 /**
  * Return the payload of an error
@@ -79,7 +79,7 @@ export const tag = <const T>(e: TaggedErr<T>): T => e[2];
 export const taggedErr =
   <const T>(t: T): InitTaggedErr<T> =>
   (p) =>
-    [errorTag, p, t] as any;
+    [_, p, t] as any;
 
 /**
  * Check if an error is tagged
