@@ -1,4 +1,4 @@
-import * as st from 'safe-throw';
+import { st } from 'safe-throw';
 
 const fooErr = st.taggedErr('foo');
 const barErr = st.taggedErr('bar');

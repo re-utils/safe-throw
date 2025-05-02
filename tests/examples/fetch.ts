@@ -1,4 +1,4 @@
-import * as st from 'safe-throw';
+import { st } from 'safe-throw';
 
 // Wrap error safely
 const res = await st.request('http://example.com');

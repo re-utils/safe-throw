@@ -3,7 +3,7 @@ A lightweight, low overhead errors-as-values API.
 # Examples
 Return errors:
 ```ts
-import * as st from 'safe-throw';
+import { st } from 'safe-throw';
 
 const divide = (a: number, b: number) =>
   b === 0 ? st.err('Cannot divide by 0') : a / b;
@@ -18,7 +18,7 @@ if (st.isErr(res)) {
 
 Wrapping fetch calls:
 ```ts
-import * as st from 'safe-throw';
+import { st } from 'safe-throw';
 
 // Wrap fetch error in a native error instance
 const safeFetch = st.asyncTry(fetch);
@@ -36,7 +36,7 @@ if (st.isErr(res)) {
 
 Handling promise errors:
 ```ts
-import * as st from 'safe-throw';
+import { st } from 'safe-throw';
 
 const res = await st.promiseTry(
   fetch('http://localhost:3000')
@@ -53,7 +53,7 @@ if (st.isErr(res)) {
 
 Create tagged errors:
 ```ts
-import * as st from 'safe-throw';
+import { st } from 'safe-throw';
 
 const httpErr = st.taggedErr('http');
 
@@ -84,7 +84,7 @@ if (st.isErr(res)) {
 
 Match different error tags:
 ```ts
-import * as st from 'safe-throw';
+import { st } from 'safe-throw';
 
 const httpErr = st.taggedErr('http');
 const validationErr = st.taggedErr('validation');
