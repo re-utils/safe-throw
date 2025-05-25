@@ -51,14 +51,18 @@ export type InferTag<T extends TaggedErr> = T[typeof _t];
  * Check whether input is an error
  * @param t
  */
-export const isErr = (t: any): t is Err =>
-  Array.isArray(t) && t[0] === _;
+export const isErr = (t: any): t is Err => Array.isArray(t) && t[0] === _;
 
 /**
  * Create an error from the payload
  * @param payload
  */
 export const err = <const T>(payload: T): Err<T> => [_, payload] as any;
+
+/**
+ * A generic error
+ */
+export const error: Err<never> = [_] as any;
 
 /**
  * Return the payload of an error
