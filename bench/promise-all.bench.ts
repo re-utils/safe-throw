@@ -5,9 +5,9 @@ summary(() => {
   const data = new Array(1000).fill(0).map(() => {
     const dat = new Array(Math.ceil(Math.random() * 5 + 3)).fill(0).map(() => {
       const i = Math.random();
-      return i < 0.5 ? Promise.resolve('str') : i < 0.7 ? 9 : Promise.reject(new Error())
+      return i < 0.5 ? Promise.resolve('str') : i < 0.7 ? 9 : null
     });
-    return () => dat;
+    return () => dat.map((t) => t ?? Promise.reject(new Error()));
   });
 
   const setup = (label: string, fn: (arr: any[]) => any) => bench(label, function* () {
