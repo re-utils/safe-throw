@@ -2,12 +2,13 @@ import { summary, run, bench, do_not_optimize } from 'mitata';
 import { st } from 'safe-throw';
 
 summary(() => {
-  const data = new Array(1000).fill(0).map(() =>
-    () => new Array(Math.ceil(Math.random() * 5 + 3)).fill(0).map(() => {
+  const data = new Array(1000).fill(0).map(() => {
+    const dat = new Array(Math.ceil(Math.random() * 5 + 3)).fill(0).map(() => {
       const i = Math.random();
       return i < 0.5 ? Promise.resolve('str') : i < 0.7 ? 9 : Promise.reject(new Error())
-    })
-  );
+    });
+    return () => dat;
+  });
 
   const setup = (label: string, fn: (arr: any[]) => any) => bench(label, function* () {
     let i = 0;
