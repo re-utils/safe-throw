@@ -1,3 +1,5 @@
+This project has been moved to [`safe-std`](https://github.com/safe-std/error).
+
 A lightweight, low overhead errors-as-values API.
 
 # Examples
